@@ -23,4 +23,16 @@
         </tr>
     }
 </table>
-
+<div class="btn-group">
+    @for (var i = 0; i < ViewBag.PagesCount; i++)
+    {
+        if (i + 1 == ViewBag.CurrentPage)
+        {
+            <span class="btn btn-default btn-danger">@(i + 1)</span>
+        }
+        else
+        {
+            <a href="@(i + 1)" class="btn btn-default">@(i + 1)</a>
+        }
+    }
+</div>

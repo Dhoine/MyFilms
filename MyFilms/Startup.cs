@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyFilms.Data;
 using MyFilms.Models;
+using MyFilms.Services;
 
 namespace MyFilms
 {
@@ -116,7 +117,7 @@ namespace MyFilms
                 vkOptions.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "first_name");
                 vkOptions.ClaimActions.MapJsonKey(ClaimTypes.Surname, "last_name");
             });
-
+            services.AddSingleton<IHelper, Helper>();
             services.AddMvc();
         }
 
