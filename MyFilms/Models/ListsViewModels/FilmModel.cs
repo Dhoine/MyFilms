@@ -12,5 +12,8 @@
         public string Writers { get; set; }
         public string Year { get; set; }
         public string Id { get; set; }
+        public bool InFavourites { get; set; } = false;
+        public bool InHistory { get; set; } = false;
+        public int UserRating { get; set; } = 0;
     }
 }

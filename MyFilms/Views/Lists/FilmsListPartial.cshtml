@@ -5,6 +5,9 @@
             <th scope="row"></th>
             <th scope="row">Title</th>
             <th scope="row">Imdb rating</th>
+            <th scope="row">User rating</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     @foreach (var film in Model)
@@ -13,8 +16,11 @@
             <td>
                 <img src="@film.PosterLink" alt="Poster image" />
             </td>
-            <td style="vertical-align: middle"><a href ="../../Info/@film.Id">@film.Name (@film.Year)</a></td>
-            <td style="text-align: center; vertical-align: middle">@film.ImdbRating</td>
+            <td style="vertical-align: middle"><h3><a href="../../Info/@film.Id">@film.Name (@film.Year)</a></h3></td>
+            <td style="text-align: center; vertical-align: middle"><h3>@film.ImdbRating</h3></td>
+            <td style="text-align: center; vertical-align: middle"><h3><input type="number" name="@film.Id" id="@film.Id" class="rating" value="@film.UserRating" /></h3></td>
+            <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none "><h3><span class="glyphicon glyphicon-heart-empty"></span></h3></button></td>
+            <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none "><h3><span class="glyphicon glyphicon-eye-close"></span></h3></button></td>
         </tr>
     }
 </table>
