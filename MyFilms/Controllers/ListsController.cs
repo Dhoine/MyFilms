@@ -40,6 +40,11 @@ namespace MyFilms.Controllers
             return ShowCommonList(ids, page);
         }
 
+        public IActionResult Search(string search)
+        {
+            return View(_helper.ParseSearchJson(_helper.GetSearchJson(search)).ToArray());
+        }
+
         private IActionResult ShowCommonList(IEnumerable<string> films, int page)
         {
             var ids = films as List<string>;

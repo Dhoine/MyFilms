@@ -11,7 +11,7 @@ namespace MyFilms.Services
     public class Helper : IHelper
     {
         private const string GetByIdUrl = "https://theimdbapi.org/api/movie?movie_id=";
-        private const string GetByTitleUrl = "http://www.theimdbapi.org/api/find/movie?title={title}&year={year}";
+        private const string SearchUrl = "http://www.theimdbapi.org/api/find/movie?title={title}";
 
         public IEnumerable<string> ParsePage(string url)
         {
@@ -30,30 +30,38 @@ namespace MyFilms.Services
 
         public FilmModel ParseFilmJson(string json)
         {
-            var model = new FilmModel();
+            
             var o = JObject.Parse(json);
-            model.Caption = (string) o.SelectToken("description");
-            model.Directors = (string) o.SelectToken("director");
+            return CreateFilmModelFromJObject(o);
+        }
+
+        private static FilmModel CreateFilmModelFromJObject(JToken o)
+        {
+            var model = new FilmModel
+            {
+                Caption = (string) o.SelectToken("description"),
+                Directors = (string) o.SelectToken("director"),
+                ImdbRating = (string)o.SelectToken("rating"),
+                Name = (string)o.SelectToken("title"),
+                PosterLink = (string)o.SelectToken("poster.thumb"),
+                Year = (string)o.SelectToken("year"),
+                Id = (string)o.SelectToken("imdb_id")
+        };
             var genreArr = o.SelectToken("genre");
             foreach (var genre in genreArr)
-                model.Genres += " | " + (string) genre;
+                model.Genres += " | " + (string)genre;
             model.Genres += " |";
-            model.ImdbRating = (string) o.SelectToken("rating");
-            model.Name = (string) o.SelectToken("title");
+            
             var starsArr = o.SelectToken("stars");
             foreach (var star in starsArr)
-                model.Stars += " | " + (string) star;
+                model.Stars += " | " + (string)star;
             model.Stars += " |";
             var writersArr = o.SelectToken("writers");
             foreach (var writer in writersArr)
-                model.Writers += " | " + (string) writer;
+                model.Writers += " | " + (string)writer;
             model.Writers += " |";
-            model.PosterLink = (string) o.SelectToken("poster.thumb");
-            model.Year = (string) o.SelectToken("year");
-            model.Id = (string) o.SelectToken("imdb_id");
             return model;
         }
-
         public string GetFilmJson(string id)
         {
             var requestUrl = GetByIdUrl + id;
@@ -68,6 +76,18 @@ namespace MyFilms.Services
                 json = wc.DownloadString(url);
             }
             return json;
+        }
+
+        public string GetSearchJson(string search)
+        {
+            var requestUrl = SearchUrl.Replace("{title}", search);
+            return  DownloadJson(requestUrl);
+        }
+
+        public IEnumerable<FilmModel> ParseSearchJson(string json)
+        {
+            var jarr = JArray.Parse(json);
+            return jarr.Select(CreateFilmModelFromJObject).ToList();
         }
     }
 }

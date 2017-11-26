@@ -27,15 +27,31 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">MyFilms</a>
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a asp-area="" asp-controller="Lists" asp-action="TopFilms" asp-route-page="1">Top</a></li>
+                    <li><a asp-area="" asp-controller="Lists" asp-action="ComingSoon" asp-route-page="1">Coming soon</a></li>
+                    <li><a asp-area="" asp-controller="Lists" asp-action="NowPlaying" asp-route-page="1">Now Playing</a></li>
+                </ul>
             </div>
             <div class="navbar-collapse collapse">
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
     </nav>
-    <div class="container body-content">
-        @RenderBody()
-    </div>
+<div class="container body-content">
+    <form role="form" action="Lists/Search">
+        <!-- Search Field -->
+        <div class="form-group navbar-left">
+            <div class="input-group">
+                <input class="form-control" type="text" name="search" placeholder="Search" required/>
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"><span style="margin-left:10px;">Search</span></span></button>
+                </span>
+            </div>
+        </div>
+    </form>
+    @RenderBody()
+</div>
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>

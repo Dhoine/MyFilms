@@ -8,5 +8,7 @@ namespace MyFilms.Services
         IEnumerable<string> ParsePage(string url);
         FilmModel ParseFilmJson(string json);
         string GetFilmJson(string id);
+        string GetSearchJson(string search);
+        IEnumerable<FilmModel> ParseSearchJson(string json);
     }
 }

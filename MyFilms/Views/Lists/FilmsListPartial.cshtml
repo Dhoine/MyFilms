@@ -14,11 +14,11 @@
     {
         <tr>
             <td>
-                <img src="@film.PosterLink" alt="Poster image" />
+                <img src="@film.PosterLink" alt=""/>
             </td>
             <td style="vertical-align: middle"><h3><a href="../../Info/@film.Id">@film.Name (@film.Year)</a></h3></td>
             <td style="text-align: center; vertical-align: middle"><h3>@film.ImdbRating</h3></td>
-            <td style="text-align: center; vertical-align: middle"><h3><input type="number" name="@film.Id" id="@film.Id" class="rating" value="@film.UserRating" /></h3></td>
+            <td style="text-align: center; vertical-align: middle"><h4><input type="number" name="@film.Id" id="@film.Id" class="rating" value="@film.UserRating" /></h4></td>
             <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none "><h3><span class="glyphicon glyphicon-heart-empty"></span></h3></button></td>
             <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none "><h3><span class="glyphicon glyphicon-eye-close"></span></h3></button></td>
         </tr>
