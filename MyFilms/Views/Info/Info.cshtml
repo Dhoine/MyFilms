@@ -1,0 +1,21 @@
+﻿@model MyFilms.Models.ListsViewModels.FilmModel
+@{
+    ViewData["Title"] = @Model.Name;
+}
+
+<h2 style="float: right">@Model.ImdbRating <span class="glyphicon glyphicon-star"></span></h2>
+<h2>@Model.Name (@Model.Year)</h2>    
+Genres: @Model.Genres
+<div class="clearfix" style="display: table">
+    <img src="@Model.PosterLink" style="float: right; clear: both; padding: 15px"  alt="Poster image"/>
+    <h3>Descriprion:</h3>
+    <blockquote>@Model.Caption</blockquote>
+    <h3>Director/s:</h3>
+    <h4>@Model.Directors</h4>
+    <h3>Writers:</h3>
+    <h4>@Model.Writers</h4>
+    <h3>Stars</h3>
+    <h4>@Model.Stars</h4>
+</div>
+
+

@@ -36,24 +36,22 @@ namespace MyFilms.Services
             model.Directors = (string) o.SelectToken("director");
             var genreArr = o.SelectToken("genre");
             foreach (var genre in genreArr)
-                model.Genres += (string) genre + "\t";
+                model.Genres += " | " + (string) genre;
+            model.Genres += " |";
             model.ImdbRating = (string) o.SelectToken("rating");
             model.Name = (string) o.SelectToken("title");
             var starsArr = o.SelectToken("stars");
             foreach (var star in starsArr)
-                model.Stars += (string) star;
+                model.Stars += " | " + (string) star;
+            model.Stars += " |";
             var writersArr = o.SelectToken("writers");
             foreach (var writer in writersArr)
-                model.Writers += (string) writer;
+                model.Writers += " | " + (string) writer;
+            model.Writers += " |";
             model.PosterLink = (string) o.SelectToken("poster.thumb");
             model.Year = (string) o.SelectToken("year");
+            model.Id = (string) o.SelectToken("imdb_id");
             return model;
-        }
-
-        public string GetFilmJson(string title, string year)
-        {
-            var requestUrl = GetByTitleUrl.Replace("{title}", title).Replace("year", year);
-            return DownloadJson(requestUrl);
         }
 
         public string GetFilmJson(string id)

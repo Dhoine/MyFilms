@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace MyFilms.Models.ListsViewModels
+﻿namespace MyFilms.Models.ListsViewModels
 {
     public class FilmModel
     {
@@ -16,5 +11,6 @@ namespace MyFilms.Models.ListsViewModels
         public string Stars { get; set; }
         public string Writers { get; set; }
         public string Year { get; set; }
+        public string Id { get; set; }
     }
 }
