@@ -18,10 +18,14 @@ namespace MyFilms.Services
             var web = new HtmlWeb();
             var doc = web.Load(url);
             var ids = Regex.Matches(doc.ParsedText, "(?<=data-titleid=\")tt(\\d+?)(?=\">)").Select(m => m.Value);
-            IEnumerable<string> enumerable = ids as IList<string> ?? ids.ToList();
-            if (!enumerable.Any())
-                enumerable = Regex.Matches(doc.ParsedText, "(?<=data-tconst=\")tt(\\d+?)(?=\">)").Select(m => m.Value);
-            return enumerable;
+            var list = ids as IList<string> ?? ids.ToList();
+            if (!list.Any())
+                list = Regex.Matches(doc.ParsedText, "(?<=data-tconst=\")tt(\\d+?)(?=\">)").Select(m => m.Value)
+                    .ToList();
+            if (!list.Any())
+                list = Regex.Matches(doc.ParsedText, "(?<=data-tconst=\")tt(\\d+?)(?=\" )").Select(m => m.Value)
+                    .ToList();
+            return list;
         }
 
         public FilmModel ParseFilmJson(string json)
