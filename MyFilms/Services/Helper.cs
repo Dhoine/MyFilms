@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using HtmlAgilityPack;
 using MyFilms.Models.ListsViewModels;
 using Newtonsoft.Json.Linq;
@@ -20,7 +18,10 @@ namespace MyFilms.Services
             var web = new HtmlWeb();
             var doc = web.Load(url);
             var ids = Regex.Matches(doc.ParsedText, "(?<=data-titleid=\")tt(\\d+?)(?=\">)").Select(m => m.Value);
-            return ids;
+            IEnumerable<string> enumerable = ids as IList<string> ?? ids.ToList();
+            if (!enumerable.Any())
+                enumerable = Regex.Matches(doc.ParsedText, "(?<=data-tconst=\")tt(\\d+?)(?=\">)").Select(m => m.Value);
+            return enumerable;
         }
 
         public FilmModel ParseFilmJson(string json)
@@ -31,21 +32,15 @@ namespace MyFilms.Services
             model.Directors = (string) o.SelectToken("director");
             var genreArr = o.SelectToken("genre");
             foreach (var genre in genreArr)
-            {
                 model.Genres += (string) genre + "\t";
-            }
             model.ImdbRating = (string) o.SelectToken("rating");
             model.Name = (string) o.SelectToken("title");
             var starsArr = o.SelectToken("stars");
             foreach (var star in starsArr)
-            {
                 model.Stars += (string) star;
-            }
             var writersArr = o.SelectToken("writers");
             foreach (var writer in writersArr)
-            {
                 model.Writers += (string) writer;
-            }
             model.PosterLink = (string) o.SelectToken("poster.thumb");
             model.Year = (string) o.SelectToken("year");
             return model;

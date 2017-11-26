@@ -1,0 +1,33 @@
+﻿@model MyFilms.Models.ListsViewModels.FilmModel[]
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="row"></th>
+            <th scope="row">Title</th>
+            <th scope="row">Imdb rating</th>
+        </tr>
+    </thead>
+    @foreach (var film in Model)
+    {
+        <tr>
+            <td>
+                <img src="@film.PosterLink" alt="Poster image" />
+            </td>
+            <td style="vertical-align: middle">@film.Name (@film.Year)</td>
+            <td style="text-align: center; vertical-align: middle">@film.ImdbRating</td>
+        </tr>
+    }
+</table>
+<div class="btn-group">
+    @for (var i = 0; i < ViewBag.PagesCount; i++)
+    {
+        if (i + 1 == ViewBag.CurrentPage)
+        {
+            <span class="btn btn-default btn-danger">@(i + 1)</span>
+        }
+        else
+        {
+            <a href="@(i + 1)" class="btn btn-default">@(i + 1)</a>
+        }
+    }
+</div>
