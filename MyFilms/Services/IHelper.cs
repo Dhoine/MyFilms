@@ -12,5 +12,8 @@ namespace MyFilms.Services
         string GetSearchJson(string search);
         IEnumerable<FilmModel> ParseSearchJson(string json);
         IEnumerable<string> GetListFromDb(int type, ApplicationDbContext context,string userId);
+        IEnumerable<FilmModel> CheckDbStateOfFilms(IEnumerable<FilmModel> films, ApplicationDbContext context, string userId);
+        void SaveToDb(string id, ApplicationDbContext context, int type, bool arg, string userId);
+        void SaveToDb(string id, ApplicationDbContext context, int rate, string userId);
     }
 }

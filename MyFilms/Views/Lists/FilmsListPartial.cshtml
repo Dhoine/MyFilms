@@ -1,4 +1,6 @@
 ﻿@model MyFilms.Models.ListsViewModels.FilmModel[]
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 <table class="table table-hover table-striped">
     <thead>
         <tr>
@@ -18,9 +20,22 @@
             </td>
             <td style="vertical-align: middle"><h3><a href="../../Info/@film.Id">@film.Name (@film.Year)</a></h3></td>
             <td style="text-align: center; vertical-align: middle"><h3>@film.ImdbRating</h3></td>
-            <td style="text-align: center; vertical-align: middle"><h4><input type="number" name="@film.Id" id="@film.Id" class="rating" value="@film.UserRating" /></h4></td>
-            <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none "><h3><span class="glyphicon glyphicon-heart-empty"></span></h3></button></td>
-            <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none "><h3><span class="glyphicon glyphicon-eye-close"></span></h3></button></td>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <td style="text-align: center; vertical-align: middle"><h4><input type="number" name="@film.Id" id="@film.Id" class="rating" value="@film.UserRating"/></h4></td>
+        <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none">
+            <h3><span class="glyphicon glyphicon-heart-empty"></span>
+            </h3></button></td>
+        <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none">
+            <h3><span class="glyphicon glyphicon-eye-close"></span>
+            </h3></button></td>
+    }
+    else
+    {
+        <td></td>
+        <td></td>
+        <td></td>
+    }
         </tr>
     }
 </table>

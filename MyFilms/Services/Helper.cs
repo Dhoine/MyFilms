@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using MyFilms.Data;
+using MyFilms.Models;
 using MyFilms.Models.ListsViewModels;
 using Newtonsoft.Json.Linq;
 
@@ -20,6 +22,59 @@ namespace MyFilms.Services
                 ? context.UserFilms.Where(e => e.User.Id == userId && e.InFavourites).ToList()
                 : context.UserFilms.Where(e => e.User.Id == userId && e.InHistory).ToList();
             return list.Select(film => film.Id).ToList();
+        }
+
+        public void SaveToDb(string id, ApplicationDbContext context, int type, bool arg, string userId)
+        {
+            FilmDbModel dbFilm;
+            var found = false;
+            try
+            {
+                dbFilm = context.UserFilms.Single(e => e.Id == id && e.User.Id == userId);
+                found = true;
+            }
+            catch (Exception)
+            {
+                dbFilm = new FilmDbModel();
+            }
+
+            switch (type)
+            {
+                case 0:
+                    dbFilm.InFavourites = true;
+                    break;
+                case 1:
+                    dbFilm.InHistory = true;
+                    break;
+                case 2:
+                    dbFilm.InFavourites = false;
+                    break;
+                case 3:
+                    dbFilm.InHistory = false;
+                    break;
+                default:
+                    return;
+            }
+            if (!found) context.UserFilms.Add(dbFilm);
+            context.SaveChanges();
+        }
+
+        public void SaveToDb(string id, ApplicationDbContext context, int rate, string userId)
+        {
+            FilmDbModel dbFilm;
+            var found = false;
+            try
+            {
+                dbFilm = context.UserFilms.Single(e => e.Id == id && e.User.Id == userId);
+                found = true;
+            }
+            catch (Exception)
+            {
+                dbFilm = new FilmDbModel();
+            }
+            dbFilm.UserRating = rate;
+            if (!found) context.UserFilms.Add(dbFilm);
+            context.SaveChanges();
         }
 
         public IEnumerable<string> ParsePage(string url)
@@ -59,6 +114,28 @@ namespace MyFilms.Services
         {
             var jarr = JArray.Parse(json);
             return jarr.Select(CreateFilmModelFromJObject).ToList();
+        }
+
+        public IEnumerable<FilmModel> CheckDbStateOfFilms(IEnumerable<FilmModel> films, ApplicationDbContext context,
+            string userId)
+        {
+            var res = new List<FilmModel>();
+            foreach (var film in films)
+            {
+                try
+                {
+                    var dbFilm = context.UserFilms.Single(e => e.Id == film.Id && e.User.Id == userId);
+                    film.InFavourites = dbFilm.InFavourites;
+                    film.InHistory = dbFilm.InHistory;
+                    film.UserRating = dbFilm.UserRating;
+                }
+                catch (Exception)
+                {
+                    //skip then
+                }
+                res.Add(film);
+            }
+            return res;
         }
 
         private static FilmModel CreateFilmModelFromJObject(JToken o)

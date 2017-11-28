@@ -62,8 +62,11 @@ namespace MyFilms.Controllers
             if (page * 5 > ids.Count)
                 return View(ids.GetRange((page - 1) * 5, ids.Count - (page - 1) * 5)
                     .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray());
-            return View(ids.GetRange((page - 1) * 5, 5)
+            if (User.Identity.Name == null)
+                return View(ids.GetRange((page - 1) * 5, 5)
                 .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray());
+            return View(_helper.CheckDbStateOfFilms(ids.GetRange((page - 1) * 5, 5)
+                .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray(),_dbContext, _userManager.GetUserAsync(User).Result.Id));
         }
 
         [Route("Lists/Watchlist/{page}")]
