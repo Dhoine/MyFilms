@@ -1,16 +1,20 @@
 ﻿@model MyFilms.Models.ListsViewModels.FilmModel[]
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <table class="table table-hover table-striped">
     <thead>
-        <tr>
-            <th scope="row"></th>
-            <th scope="row">Title</th>
-            <th scope="row">Imdb rating</th>
+    <tr>
+        <th scope="row"></th>
+        <th scope="row">Title</th>
+        <th scope="row">Imdb rating</th>
+        @if (SignInManager.IsSignedIn(User))
+        {
             <th scope="row">User rating</th>
             <th></th>
             <th></th>
-        </tr>
+        }
+    </tr>
     </thead>
     @foreach (var film in Model)
     {
@@ -18,24 +22,50 @@
             <td>
                 <img src="@film.PosterLink" alt=""/>
             </td>
-            <td style="vertical-align: middle"><h3><a href="../../Info/@film.Id">@film.Name (@film.Year)</a></h3></td>
-            <td style="text-align: center; vertical-align: middle"><h3>@film.ImdbRating</h3></td>
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <td style="text-align: center; vertical-align: middle"><h4><input type="number" name="@film.Id" id="@film.Id" class="rating" value="@film.UserRating"/></h4></td>
-        <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none">
-            <h3><span class="glyphicon glyphicon-heart-empty"></span>
-            </h3></button></td>
-        <td style="text-align: center; vertical-align: middle"><button style="background: none; border: none">
-            <h3><span class="glyphicon glyphicon-eye-close"></span>
-            </h3></button></td>
-    }
-    else
-    {
-        <td></td>
-        <td></td>
-        <td></td>
-    }
+            <td style="vertical-align: middle">
+                <h3>
+                    <a href="../../Info/@film.Id">@film.Name (@film.Year)</a>
+                </h3>
+            </td>
+            <td style="text-align: center; vertical-align: middle">
+                <h3>@film.ImdbRating</h3>
+            </td>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <td style="text-align: center; vertical-align: middle">
+                    <h4>
+                        <input type="number" name="@film.Id" id="@film.Id" class="rating" value="@film.UserRating" onchange="onRatingChange(this)"/>
+                    </h4>
+                </td>
+                <td style="text-align: center; vertical-align: middle">
+                    <button style="background: none; border: none">
+                        <h3>
+                            @if (!film.InFavourites)
+                            {
+                                <span class="glyphicon glyphicon-heart-empty" value="@film.Id"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-heart" value="@film.Id"></span>
+                            }
+                        </h3>
+                    </button>
+                </td>
+                <td style="text-align: center; vertical-align: middle">
+                    <button style="background: none; border: none">
+                        <h3>
+                            @if (!film.InHistory)
+                            {
+                                <span class="glyphicon glyphicon-eye-close" value="@film.Id"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-eye-open" value="@film.Id"></span>
+                            }
+                        </h3>
+                    </button>
+                </td>
+            }
         </tr>
     }
 </table>
@@ -52,3 +82,39 @@
         }
     }
 </div>
+<script>
+    $("body").on("click",
+        ".glyphicon-heart-empty",
+        function() {
+            const id = this.attributes.value.value;
+            $.post(`/Lists/AddToFavourites/${id}`);
+            $(this).removeClass('glyphicon-heart-empty').addClass('glyphicon-heart');
+        });
+    $("body").on("click",
+        ".glyphicon-eye-close",
+        function() {
+            const id = this.attributes.value.value;
+            $.post(`/Lists/AddToHistory/${id}`);
+            $(this).removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
+        });
+    $("body").on("click",
+        ".glyphicon-heart",
+        function() {
+            const id = this.attributes.value.value;
+            $.post(`/Lists/RemoveFromFavourites/${id}`);
+            $(this).removeClass('glyphicon-heart').addClass('glyphicon-heart-empty');
+        });
+    $("body").on("click",
+        ".glyphicon-eye-open",
+        function() {
+            const id = this.attributes.value.value;
+            $.post(`/Lists/RemoveFromHistory/${id}`);
+            $(this).removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
+        });
+
+    function onRatingChange(elem) {
+        const rate = elem.attributes.value.value;
+        const id = elem.attributes.id.value;
+        $.post(`/Lists/Rate/${id}/${rate}`);
+    }
+</script>

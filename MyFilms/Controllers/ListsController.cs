@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyFilms.Data;
@@ -49,7 +50,10 @@ namespace MyFilms.Controllers
 
         public IActionResult Search(string search)
         {
-            return View(_helper.ParseSearchJson(_helper.GetSearchJson(search)).ToArray());
+            if (User.Identity.Name == null)
+                return View(_helper.ParseSearchJson(_helper.GetSearchJson(search)).ToArray());
+            return View(_helper.CheckDbStateOfFilms(_helper.ParseSearchJson(_helper.GetSearchJson(search)), _dbContext,
+                _userManager.GetUserAsync(User).Result.Id).ToArray());
         }
 
         private IActionResult ShowList(IEnumerable<string> films, int page)
@@ -59,30 +63,76 @@ namespace MyFilms.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             ViewBag.PagesCount = Math.Ceiling(Convert.ToDecimal(ids.Count) / 5);
             ViewBag.CurrentPage = page;
+            var count = 5;
             if (page * 5 > ids.Count)
-                return View(ids.GetRange((page - 1) * 5, ids.Count - (page - 1) * 5)
-                    .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray());
+                count = ids.Count - (page - 1) * 5;
             if (User.Identity.Name == null)
-                return View(ids.GetRange((page - 1) * 5, 5)
-                .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray());
-            return View(_helper.CheckDbStateOfFilms(ids.GetRange((page - 1) * 5, 5)
-                .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray(),_dbContext, _userManager.GetUserAsync(User).Result.Id));
+                return View(ids.GetRange((page - 1) * 5, count)
+                    .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray());
+            return View(_helper.CheckDbStateOfFilms(ids.GetRange((page - 1) * 5, count)
+                    .Select(film => _helper.ParseFilmJson(_helper.GetFilmJson(film))).ToArray(), _dbContext,
+                _userManager.GetUserAsync(User).Result.Id));
         }
 
+        [Authorize]
         [Route("Lists/Watchlist/{page}")]
         public IActionResult Watchlist(int page)
         {
-            if (User.Identity.Name == null) return RedirectToAction(nameof(HomeController.Index), "Home");
             var ids = _helper.GetListFromDb(0, _dbContext, _userManager.GetUserAsync(User).Result.Id);
             return ShowList(ids, page);
         }
 
+        [Authorize]
         [Route("Lists/MyFilms/{page}")]
         public IActionResult MyFilms(int page)
         {
-            if (User.Identity.Name == null) return RedirectToAction(nameof(HomeController.Index), "Home");
             var ids = _helper.GetListFromDb(1, _dbContext, _userManager.GetUserAsync(User).Result.Id);
             return ShowList(ids, page);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("Lists/AddToFavourites/{id}")]
+        public IActionResult AddToFavourites(string id)
+        {
+            _helper.SaveToDb(id, _dbContext, 0, true, _userManager.GetUserAsync(User).Result);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("Lists/RemoveFromFavourites/{id}")]
+        public IActionResult RemoveFromFavourites(string id)
+        {
+            _helper.SaveToDb(id, _dbContext, 2, true, _userManager.GetUserAsync(User).Result);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("Lists/RemoveFromHistory/{id}")]
+        public IActionResult RemoveFromHistory(string id)
+        {
+            _helper.SaveToDb(id, _dbContext, 3, true, _userManager.GetUserAsync(User).Result);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("Lists/AddToHistory/{id}")]
+        public IActionResult AddToHistory(string id)
+        {
+            _helper.SaveToDb(id, _dbContext, 1, true, _userManager.GetUserAsync(User).Result);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("Lists/Rate/{id}/{rate}")]
+        public IActionResult Rate(string id, int rate)
+        {
+            _helper.SaveToDb(id, _dbContext, rate, _userManager.GetUserAsync(User).Result);
+            return Ok();
         }
     }
 }

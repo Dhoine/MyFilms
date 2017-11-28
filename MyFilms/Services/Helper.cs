@@ -24,18 +24,18 @@ namespace MyFilms.Services
             return list.Select(film => film.Id).ToList();
         }
 
-        public void SaveToDb(string id, ApplicationDbContext context, int type, bool arg, string userId)
+        public void SaveToDb(string id, ApplicationDbContext context, int type, bool arg, ApplicationUser user)
         {
             FilmDbModel dbFilm;
             var found = false;
             try
             {
-                dbFilm = context.UserFilms.Single(e => e.Id == id && e.User.Id == userId);
+                dbFilm = context.UserFilms.Single(e => e.Id == id && e.User.Id == user.Id);
                 found = true;
             }
             catch (Exception)
             {
-                dbFilm = new FilmDbModel();
+                dbFilm = new FilmDbModel {User = user, Id = id};
             }
 
             switch (type)
@@ -59,18 +59,18 @@ namespace MyFilms.Services
             context.SaveChanges();
         }
 
-        public void SaveToDb(string id, ApplicationDbContext context, int rate, string userId)
+        public void SaveToDb(string id, ApplicationDbContext context, int rate, ApplicationUser user)
         {
             FilmDbModel dbFilm;
             var found = false;
             try
             {
-                dbFilm = context.UserFilms.Single(e => e.Id == id && e.User.Id == userId);
+                dbFilm = context.UserFilms.Single(e => e.Id == id && e.User.Id == user.Id);
                 found = true;
             }
             catch (Exception)
             {
-                dbFilm = new FilmDbModel();
+                dbFilm = new FilmDbModel {User = user, Id = id};
             }
             dbFilm.UserRating = rate;
             if (!found) context.UserFilms.Add(dbFilm);
@@ -135,7 +135,25 @@ namespace MyFilms.Services
                 }
                 res.Add(film);
             }
-            return res;
+            return res.ToArray();
+        }
+
+        public void SaveToDb(string id, ApplicationDbContext context, int rate, string userId)
+        {
+            FilmDbModel dbFilm;
+            var found = false;
+            try
+            {
+                dbFilm = context.UserFilms.Single(e => e.Id == id && e.User.Id == userId);
+                found = true;
+            }
+            catch (Exception)
+            {
+                dbFilm = new FilmDbModel();
+            }
+            dbFilm.UserRating = rate;
+            if (!found) context.UserFilms.Add(dbFilm);
+            context.SaveChanges();
         }
 
         private static FilmModel CreateFilmModelFromJObject(JToken o)
