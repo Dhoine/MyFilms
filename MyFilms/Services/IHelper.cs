@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MyFilms.Data;
 using MyFilms.Models.ListsViewModels;
 
 namespace MyFilms.Services
@@ -10,5 +11,6 @@ namespace MyFilms.Services
         string GetFilmJson(string id);
         string GetSearchJson(string search);
         IEnumerable<FilmModel> ParseSearchJson(string json);
+        IEnumerable<string> GetListFromDb(int type, ApplicationDbContext context,string userId);
     }
 }
