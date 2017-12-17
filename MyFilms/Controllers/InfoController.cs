@@ -19,9 +19,16 @@ namespace MyFilms.Controllers
         [Route("Info/{id}")]
         public IActionResult Info(string id)
         {
-            var json = _helper.GetFilmJson(id);
-            var model = _helper.ParseFilmJson(json);
-            return View(model);
+            try
+            {
+                var json = _helper.GetFilmJson(id);
+                var model = _helper.ParseFilmJson(json);
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(HomeController.ConnectionFailed), "Home");
+            }
         }
     }
 }

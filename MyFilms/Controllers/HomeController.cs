@@ -12,12 +12,17 @@ namespace MyFilms.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("TopFilms","Lists",new {@page = 1});
         }
 
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult ConnectionFailed()
+        {
+            return View();
         }
     }
 }

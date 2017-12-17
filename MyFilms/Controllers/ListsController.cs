@@ -30,30 +30,58 @@ namespace MyFilms.Controllers
         [Route("Lists/TopFilms/{page}")]
         public IActionResult TopFilms(int page)
         {
-            var ids = _helper.ParsePage(TopFulmsUrl).ToList();
-            return ShowList(ids, page);
+            try
+            {
+                var ids = _helper.ParsePage(TopFulmsUrl).ToList();
+                return ShowList(ids, page);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(HomeController.ConnectionFailed), "Home");
+            }    
         }
 
         [Route("Lists/NowPlaying/{page}")]
         public IActionResult NowPlaying(int page)
         {
-            var ids = _helper.ParsePage(PlayingNowUrl).ToList();
-            return ShowList(ids, page);
+            try
+            {
+                var ids = _helper.ParsePage(PlayingNowUrl).ToList();
+                return ShowList(ids, page);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(HomeController.ConnectionFailed), "Home");
+            }
         }
 
         [Route("Lists/ComingSoon/{page}")]
         public IActionResult ComingSoon(int page)
         {
-            var ids = _helper.ParsePage(ComingSoonUrl).ToList();
-            return ShowList(ids, page);
+            try
+            {
+                var ids = _helper.ParsePage(ComingSoonUrl).ToList();
+                return ShowList(ids, page);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(HomeController.ConnectionFailed), "Home");
+            }    
         }
 
         public IActionResult Search(string search)
         {
-            if (User.Identity.Name == null)
-                return View(_helper.ParseSearchJson(_helper.GetSearchJson(search)).ToArray());
-            return View(_helper.CheckDbStateOfFilms(_helper.ParseSearchJson(_helper.GetSearchJson(search)), _dbContext,
-                _userManager.GetUserAsync(User).Result.Id).ToArray());
+            try
+            {
+                if (User.Identity.Name == null)
+                    return View(_helper.ParseSearchJson(_helper.GetSearchJson(search)).ToArray());
+                return View(_helper.CheckDbStateOfFilms(_helper.ParseSearchJson(_helper.GetSearchJson(search)), _dbContext,
+                    _userManager.GetUserAsync(User).Result.Id).ToArray());
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(HomeController.ConnectionFailed), "Home");
+            }
         }
 
         private IActionResult ShowList(IEnumerable<string> films, int page)
