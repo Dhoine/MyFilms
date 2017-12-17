@@ -6,10 +6,13 @@
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
             <li>
-                <a asp-area="">Hello @UserManager.GetUserName(User)!</a>
+                <a asp-area="" asp-controller="Lists" asp-action="TopFilms" asp-route-page="1">Top</a>
             </li>
             <li>
-                <button type="submit" class="btn btn-link navbar-btn navbar-link">Log out</button>
+                <a asp-area="" asp-controller="Lists" asp-action="ComingSoon" asp-route-page="1">Coming soon</a>
+            </li>
+            <li>
+                <a asp-area="" asp-controller="Lists" asp-action="NowPlaying" asp-route-page="1">Now Playing</a>
             </li>
             <li>
                 <a asp-area="" asp-controller="Lists" asp-action="Watchlist" asp-route-page="1">Watchlist</a>
@@ -17,12 +20,27 @@
             <li>
                 <a asp-area="" asp-controller="Lists" asp-action="MyFilms" asp-route-page="1">My films</a>
             </li>
+            <li>
+                <a asp-area="">Hello @UserManager.GetUserName(User)!</a>
+            </li>
+            <li>
+                <button type="submit" class="btn btn-link navbar-btn navbar-link">Log out</button>
+            </li>
         </ul>
     </form>
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a asp-area="" asp-controller="Lists" asp-action="TopFilms" asp-route-page="1">Top</a>
+        </li>
+        <li>
+            <a asp-area="" asp-controller="Lists" asp-action="ComingSoon" asp-route-page="1">Coming soon</a>
+        </li>
+        <li>
+            <a asp-area="" asp-controller="Lists" asp-action="NowPlaying" asp-route-page="1">Now Playing</a>
+        </li>
         <li>
             <a asp-area="" asp-controller="Account" asp-action="Register">Register</a>
         </li>
